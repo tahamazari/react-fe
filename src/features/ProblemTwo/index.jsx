@@ -1,53 +1,65 @@
 import { useState } from "react";
 import axios from "axios";
-import { Sidebar, Button, OutputColumns } from "../../components";
-import { BASE_TABLE_COLUMNS, API_URL } from "../../constants";
-import WarningBar from "../WarningBar";
-import FilterSection from "../FilterSection";
+
+import { Sidebar, Button, Dropdown, Input, Badge, Table, OutputColumns } from "../../components";
+import { COMBINED_TABLE_COLUMNS, API_URL } from "../../constants";
+import FilterSection from "./FilterSection";
+import FilterBadge from "./FilterBadge";
 
 const ProblemTwo = () => {
-    const [tables, setTables] = useState({}); // To store the returned tables data
+    const [allFilters, setAllFilters] = useState([]);
+    const [activeFilter, setActiveFilter] = useState({});
+    const [filterValue, setFilterValue] = useState("");
+    const [outputColumns, setOutputColumns] = useState([])
     const [warning, setWarning] = useState("");
-    const [allFilters, setAllFilters] = useState({});
-    const [clearValues, setClearValues] = useState(false);
+    const [table, setTable] = useState("");
 
-    // Helper function to determine active tables based on filters
-    const getActiveTables = () => {
-        return Object.keys(allFilters).filter(
-            (table) => allFilters[table] && allFilters[table].length > 0
-        );
+    const [dateFilter, setDateFilter] = useState({
+        label: "Greater Than Equal to",
+        value: "greater-than-equal-to"
+    },)
+
+    const setFilter = (filter) => {
+        setActiveFilter(filter);
     };
 
-    const clearFilters = () => {
-        setTables({}); // Reset the tables
-        setWarning("");
-        setAllFilters({});
-        setClearValues(true);
-        setTimeout(() => setClearValues(false), 0);
+    const addFilter = () => {
+        const isDateTypeFilter = activeFilter.type === "date";
+        const newFilter = [activeFilter.value, isDateTypeFilter ? dateFilter.value : "includes", [filterValue]];
+        setAllFilters([...allFilters, newFilter]);
+        setActiveFilter({});
+        setFilterValue("");
     };
+
+    const onSetOutputColumns = (column) => {
+        // Check if the column already exists in the array
+        if (outputColumns.includes(column)) {
+            // Remove the column if it exists
+            const filteredColumns = outputColumns.filter(item => item !== column);
+            setOutputColumns(filteredColumns);
+        } else {
+            // Add the column if it doesn't exist
+            setOutputColumns([...outputColumns, column]);
+        }
+    };
+
+    const extractValuesFromObjects = (data) => {
+        return data.map(obj => Object.values(obj));
+    }
 
     const applyFilterAndFetchData = async () => {
-        const activeTables = getActiveTables(); // Get the active tables based on filters
-
-        if (activeTables.length === 0) {
-            setWarning("Please apply filters to fetch data.");
-            return;
-        }
-
+        console.log(allFilters);
         setWarning("");
         try {
-            // Send the active tables and filters to the backend
-            const response = await axios.post(`${API_URL}/process`, {
-                tables: activeTables, // Send the active tables
-                filters: { ...allFilters },
+            const response = await axios.post(`${API_URL}/query`, {
+                "filter_arguments": [...allFilters],
+                "output_columns": [...outputColumns]
             });
 
-            // Destructure the response data to extract the relevant tables
-            const { company_info = [], employee_info = [], events_info = [] } = response.data || {};
+            const data = response.data || {};
 
-            // Set the tables if there's any data, otherwise show a warning
-            if (company_info.length || employee_info.length || events_info.length) {
-                setTables(response.data); // Update tables with the response data
+            if (data.length) {
+                setTable(data);
             } else {
                 setWarning("Sorry! No data found against current filters.");
             }
@@ -56,76 +68,49 @@ const ProblemTwo = () => {
         }
     };
 
-    const handleAddFilter = (type, filter) => {
-        setAllFilters((prev) => ({
-            ...prev,
-            [type]: [...(prev[type] || []), filter],
-        }));
-    };
-
-    const handleRemoveFilter = (type, filter) => {
-        setAllFilters((prev) => {
-            const updatedFilters = prev[type].filter((f) => f.key !== filter.key || f.value !== filter.value);
-            return {
-                ...prev,
-                [type]: updatedFilters,
-            };
-        });
-    };
-
-    const hasFilters = Object.keys(allFilters).some((key) => allFilters[key].length > 0);
-
     return (
         <Sidebar>
-            <div>Problem 2</div>
+            <div className="px-4 py-6">
+                <h1 className="text-xl font-bold mb-4">Problem 2</h1>
 
-            {/* Filters for Events, Companies, and Employees */}
-            <FilterSection
-                title="Events"
-                columns={BASE_TABLE_COLUMNS["events_info"]}
-                onAddFilter={(filter) => handleAddFilter("events_info", filter)}
-                clearValues={clearValues}
-                onRemoveFilter={(filter) => handleRemoveFilter("events_info", filter)}
-            />
-            <FilterSection
-                title="Companies"
-                columns={BASE_TABLE_COLUMNS["company_info"]}
-                onAddFilter={(filter) => handleAddFilter("company_info", filter)}
-                clearValues={clearValues}
-                onRemoveFilter={(filter) => handleRemoveFilter("company_info", filter)}
-            />
-            <FilterSection
-                title="Employees"
-                columns={BASE_TABLE_COLUMNS["employee_info"]}
-                onAddFilter={(filter) => handleAddFilter("employee_info", filter)}
-                clearValues={clearValues}
-                onRemoveFilter={(filter) => handleRemoveFilter("employee_info", filter)}
-            />
+                {/* Dropdown for selecting filter */}
+                <Dropdown items={COMBINED_TABLE_COLUMNS} onSelect={setFilter} />
 
-            {/* Action Buttons */}
-            {hasFilters && (
-                <div className="flex pt-2">
-                    <Button title="Search" className="h-10 mt-6 ml-5" onClick={applyFilterAndFetchData} />
-                    <Button title="Clear Filters" className="h-10 mt-6 ml-5 bg-red-600 hover:bg-gray-700" onClick={clearFilters} />
+                {/* Filter input section */}
+                {activeFilter.label && (
+                    <FilterSection
+                        label={activeFilter.label}
+                        type={activeFilter.type}
+                        value={filterValue}
+                        onValueChange={(e) => setFilterValue(e.target.value)}
+                        onAddFilter={addFilter}
+                        setDateFilter={setDateFilter}
+                    />
+                )}
+
+                {/* Display all filters as badges */}
+                <div className="my-4">
+                    {allFilters.map((filter, index) => (
+                        <FilterBadge key={index} filter={filter} />
+                    ))}
                 </div>
-            )}
 
-            <OutputColumns />
-
-            {/* Conditionally Render CustomTableSection for Each Section */}
-            {/* <div className="flex flex-col">
-                {tables.events_info?.length > 0 && (
-                    <CustomTableSection title="Events" data={tables["events_info"]} />
+                {
+                    <div>
+                        <OutputColumns activeColumns={outputColumns} onClick={onSetOutputColumns} columns={COMBINED_TABLE_COLUMNS.slice(0, 6)}/>
+                        <OutputColumns activeColumns={outputColumns} onClick={onSetOutputColumns} columns={COMBINED_TABLE_COLUMNS.slice(6, 11)}/>
+                        <OutputColumns activeColumns={outputColumns} onClick={onSetOutputColumns} columns={COMBINED_TABLE_COLUMNS.slice(11)}/>
+                    </div>
+                }
+                {/* Search button */}
+                {!!allFilters.length && !!outputColumns.length && (
+                    <Button title="Search" className="h-10 mt-5 mb-6" onClick={applyFilterAndFetchData} />
                 )}
-                {tables.company_info?.length > 0 && (
-                    <CustomTableSection title="Companies" data={tables["company_info"]} />
-                )}
-                {tables.employee_info?.length > 0 && (
-                    <CustomTableSection title="Employees" data={tables["employee_info"]} />
-                )}
-            </div> */}
-
-            {warning && <WarningBar message={warning} />}
+                {
+                    !!table.length &&
+                    <Table columns={Object.keys(table[0])} rows={extractValuesFromObjects(table)}/>
+                }
+            </div>
         </Sidebar>
     );
 };

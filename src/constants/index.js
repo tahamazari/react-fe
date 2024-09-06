@@ -43,3 +43,25 @@ export const BASE_TABLE_COLUMNS = {
         { label: "Person Department", value: "person_department" }
     ]
 };
+
+export const COMBINED_TABLE_COLUMNS = [
+        { label: "Event URL", value: "event_url", type: "text" },
+        { label: "Event Name", value: "event_name", type: "text" },
+        { label: "Event Start Date", value: "event_start_date", type: "date" },
+        { label: "Event City", value: "event_city", type: "text" },
+        { label: "Event Country", value: "event_country", type: "text" },
+        { label: "Event Industry", value: "event_industry", type: "text" },
+        { label: "Company URL", value: "company_url", type: "text" },
+        { label: "Company Name", value: "company_name", type: "text" },
+        { label: "Company Industry", value: "company_industry", type: "text" },
+        { label: "Company Revenue", value: "company_revenue", type: "text" },
+        { label: "Company Country", value: "company_country", type: "text" },
+        { label: "Person ID", value: "person_id", type: "text" },
+        { label: "Person First Name", value: "person_first_name", type: "text" },
+        { label: "Person Last Name", value: "person_last_name", type: "text" },
+        { label: "Person Email", value: "person_email", type: "text" },
+        { label: "Person City", value: "person_city", type: "text" },
+        { label: "Person Country", value: "person_country", type: "text" },
+        { label: "Person Seniority", value: "person_seniority", type: "text" },
+        { label: "Person Department", value: "person_department", type: "text" }
+    ]
