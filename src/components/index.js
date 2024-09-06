@@ -5,6 +5,7 @@ import Table from './Table';
 import Tooltip from './Tooltip';
 import Dropdown from './Dropdown';
 import Badge from './Badge';
+import OutputColumns from './OutputColumns';
 
 export {
   Button,
@@ -13,5 +14,6 @@ export {
   Table,
   Tooltip,
   Dropdown,
-  Badge
+  Badge,
+  OutputColumns
 };
