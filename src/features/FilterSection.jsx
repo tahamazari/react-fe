@@ -74,24 +74,6 @@ const FilterSection = ({ title, columns, onAddFilter, clearValues, onRemoveFilte
                     />
                 ))}
             </div>
-            <div className="flex w-full gap-1 border-b-2 border-gray-300 pb-2 space-between mt-4">
-                <div className="flex">
-                    {outputColumns.map(({ label, value }, index) => (
-                        <div key={index} className="flex items-center ml-[4px] bg-gray-100 border border-gray-300 text-gray-800 px-2 py-1 rounded-sm">
-                            <div className="text-sm font-medium">{label}</div>
-                            <div className="pl-1">
-                                <XMarkIcon
-                                    className="cursor-pointer h-3 w-3 text-gray-500 hover:text-red-500 transition-colors duration-200"
-                                    onClick={() => removeColumn(value)}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div>
-                    <Button title="Reset" className="bg-red-500" onClick={resetColumns} />
-                </div>
-            </div>
         </div>
     );
 };
