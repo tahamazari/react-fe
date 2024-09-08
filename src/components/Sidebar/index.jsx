@@ -14,8 +14,8 @@ import {
 } from '@heroicons/react/24/outline'
 
 const navigation = [
-  { name: 'Problem One', href: '/problemOne', icon: HomeIcon, current: true },
-  { name: 'Problem Two', href: '/problemTwo', icon: UsersIcon, current: false },
+  { name: 'Problem One', href: '/problemOne', icon: HomeIcon, current: window.location.href.indexOf("problemOne") !== -1 },
+  { name: 'Problem Two', href: '/problemTwo', icon: UsersIcon, current: window.location.href.indexOf("problemTwo") !== -1 },
   // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
   // { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
   // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },

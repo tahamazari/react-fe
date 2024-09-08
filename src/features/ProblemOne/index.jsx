@@ -10,6 +10,7 @@ import FilterSection from "../FilterSection";
 const ProblemOne = () => {
     const [tables, setTables] = useState("");
     const [warning, setWarning] = useState("");
+    const [loading, setLoading] = useState(false);
     const [allFilters, setAllFilters] = useState({});
     const [clearValues, setClearValues] = useState(false); // State to trigger clearing filters
 
@@ -26,9 +27,14 @@ const ProblemOne = () => {
     const applyFilterAndFetchData = async () => {
         console.log(allFilters);
         setWarning("");
+        setLoading(true)
+        setTables("");
         try {
             const response = await axios.post(`${API_URL}/process`, {
-                ...allFilters // Send all filters to the backend
+                ...allFilters,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             });
 
             const { company_info = [], employee_info = [], events_info = [] } = response.data || {};
@@ -36,10 +42,17 @@ const ProblemOne = () => {
             if (company_info.length && employee_info.length && events_info.length) {
                 setTables(response.data);
             } else {
+                setTables({
+                    "company_info": [],
+                    "employee_info": [],
+                    "events_info": []
+                });
                 setWarning("Sorry! No data found against current filters.");
             }
+            setLoading(false)
         } catch (error) {
             setWarning("An error occurred while fetching data.");
+            setLoading(false)
         }
     };
 
@@ -94,13 +107,16 @@ const ProblemOne = () => {
                 </div>
             )}
 
-            {tables && (
+            {tables && !loading ?
                 <div className="flex flex-col">
                     <TableSection title="Events" data={tables["events_info"]} />
                     <TableSection title="Companies" data={tables["company_info"]} />
                     <TableSection title="Employees" data={tables["employee_info"]} />
+                </div> : 
+                <div class="flex justify-center items-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-blue-500 border-solid"></div>
                 </div>
-            )}
+            }
 
             {warning && <WarningBar message={warning} />}
         </Sidebar>

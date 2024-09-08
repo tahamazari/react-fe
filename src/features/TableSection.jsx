@@ -11,10 +11,14 @@ const TableSection = ({ title, data }) => {
             <h1 className="text-3xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
                 {title}
             </h1>
-            <Table
-                columns={Object.keys(data[0] || {})}
-                rows={extractValuesFromObjects(data)}
-            />
+            { 
+                !!data.length ?
+                <Table
+                    columns={Object.keys(data[0] || {})}
+                    rows={extractValuesFromObjects(data)}
+                /> : "Sorry, no data found against current filters!"
+            }
+            
         </div>
     )
 };
