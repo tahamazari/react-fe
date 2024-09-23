@@ -5,8 +5,9 @@ import {
     Navigate
   } from "react-router-dom";
   
-  import ProblemOne from "../features/ProblemOne";
-  import ProblemTwo from "../features/ProblemTwo";
+import ProblemOne from "../features/ProblemOne";
+import ProblemTwo from "../features/ProblemTwo";
+import ProblemOneUpdated from "../features/ProblemOneUpdated";
   
   
   const routes = [
@@ -17,6 +18,10 @@ import {
     {
       path: '/problemTwo',
       element: <ProblemTwo />
+    },
+    {
+      path: '/problemOneUpdated',
+      element: <ProblemOneUpdated />
     },
   ]
   

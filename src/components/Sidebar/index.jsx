@@ -16,6 +16,7 @@ import {
 const navigation = [
   { name: 'Problem One', href: '/problemOne', icon: HomeIcon, current: window.location.href.indexOf("problemOne") !== -1 },
   { name: 'Problem Two', href: '/problemTwo', icon: UsersIcon, current: window.location.href.indexOf("problemTwo") !== -1 },
+  { name: 'Problem One Updated', href: '/problemOneUpdated', icon: UsersIcon, current: window.location.href.indexOf("problemOneUpdated") !== -1 },
   // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
   // { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
   // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
